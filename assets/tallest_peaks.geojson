@@ -1,0 +1,40 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Mount Fuji", "height": 3776, "location": "Shizuoka/Yamanashi" },
+      "geometry": { "type": "Point", "coordinates": [138.7274, 35.3606] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mount Kita", "height": 3193, "location": "Yamanashi" },
+      "geometry": { "type": "Point", "coordinates": [138.2428, 35.6747] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mount Okuhotaka", "height": 3190, "location": "Gifu/Nagano" },
+      "geometry": { "type": "Point", "coordinates": [137.6461, 36.2906] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mount Aino", "height": 3189, "location": "Shizuoka/Yamanashi" },
+      "geometry": { "type": "Point", "coordinates": [138.2261, 35.6461] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mount Yari", "height": 3180, "location": "Gifu/Nagano" },
+      "geometry": { "type": "Point", "coordinates": [137.6467, 36.3411] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mount Hōō", "height": 2840, "location": "Yamanashi" },
+      "geometry": { "type": "Point", "coordinates": [138.2981, 35.7261] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mount Norikura", "height": 3026, "location": "Gifu/Nagano" },
+      "geometry": { "type": "Point", "coordinates": [137.5531, 36.1061] }
+    }
+  ]
+}

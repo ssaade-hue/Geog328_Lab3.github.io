@@ -1,0 +1,101 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tokyo Disneyland",
+        "location": "Urayasu, Chiba",
+        "type": "Theme Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.8803, 35.6329]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tokyo DisneySea",
+        "location": "Urayasu, Chiba",
+        "type": "Theme Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.8890, 35.6266]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Universal Studios Japan",
+        "location": "Osaka",
+        "type": "Theme Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.4326, 34.6654]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Fuji-Q Highland",
+        "location": "Fujiyoshida, Yamanashi",
+        "type": "Amusement Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [138.7808, 35.4868]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nagashima Spa Land",
+        "location": "Kuwana, Mie",
+        "type": "Amusement Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [136.7073, 35.0318]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Yokohama Cosmo World",
+        "location": "Yokohama, Kanagawa",
+        "type": "Amusement Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.6365, 35.4553]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Huis Ten Bosch",
+        "location": "Sasebo, Nagasaki",
+        "type": "Theme Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [129.7884, 33.0859]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sanrio Puroland",
+        "location": "Tama, Tokyo",
+        "type": "Indoor Theme Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.4462, 35.6275]
+      }
+    }
+  ]
+}
