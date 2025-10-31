@@ -2,171 +2,281 @@
 <html lang="en-US">
 
 <head>
-	<meta charset="utf-8">
-	<title>Japan's Tallest Peaks</title>
-	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-	<link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
-	<script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
-	<style>
-		body { margin: 0; padding: 0; }
-		#container {
-			display: flex;
-			height: 100vh;
-			flex-direction: row;
-			align-items: stretch;
-		}
-		#side-panel {
-			flex-basis: 400px;
-			overflow-y: auto;
-			background: #222;
-			color: #f5f5f5;
-			box-shadow: -2px 0 8px rgba(0,0,0,0.12);
-			z-index: 2;
-		}
-		#map { flex-grow: 1; }
-		button { margin-bottom: 10px; }
-		table {
-			border-collapse: collapse;
-			width: 100%;
-			background-color: #222;
-			color: #f5f5f5;
-			border: 1px solid #444;
-			font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-			font-size: 15px;
-			box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-		}
-		th {
-			background-color: #333;
-			color: #fff;
-			font-weight: 600;
-			text-align: left;
-			padding: 14px 16px;
-			border-bottom: 2px solid #444;
-		}
-		td {
-			text-align: left;
-			padding: 12px 16px;
-			border-bottom: 1px solid #444;
-		}
-		tr { transition: background 0.2s; }
-		tr:nth-child(even) { background-color: #262626; }
-		tr:hover { background-color: #2a2a2a; }
-		@media (max-width: 1024px) {
-			#side-panel { display: none; }
-		}
-	</style>
+    <meta charset="utf-8">
+    <title>Earthquake List</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <!-- Including the MapLibre GL JS CSS and JS files -->
+    <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+
+    <style>
+        /* CSS styles for the layout and components */
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            display: flex;
+            height: 100vh;
+            flex-direction: row;
+            align-items: stretch;
+        }
+
+        #side-panel {
+            flex-basis: 500px;
+            overflow-y: scroll;
+        }
+
+        @media (max-width: 1024px) {
+            #side-panel {
+                display: none;
+            }
+        }
+
+        #map {
+            flex-grow: 1;
+        }
+
+        button {
+            margin-bottom: 10px;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            background-color: #222;
+            color: #f5f5f5;
+            border: 1px solid #444;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+            font-weight: 600;
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 2px solid #444;
+        }
+
+        td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #444;
+        }
+
+        tr {
+            transition: background 0.2s;
+        }
+
+        tr:nth-child(even) {
+            background-color: #262626;
+        }
+
+        tr:hover {
+            background-color: #2a2a2a;
+        }
+    </style>
 </head>
 
 <body>
-	<main id="container">
-		<div id="side-panel">
-			<h2>Japan's Tallest Peaks</h2>
-			<button>Sort by Distance from Tokyo Tower</button>
-			<table>
-				<tr>
-					<th>Name</th>
-					<th>Height (m)</th>
-					<th>Location</th>
-					<th>Distance (km)</th>
-				</tr>
-			</table>
-		</div>
-		<div id="map"></div>
-	</main>
-	<script>
-		mapboxgl.accessToken = 'pk.eyJ1IjoiamFrb2J6aGFvIiwiYSI6ImNqaW85NzNrdDA3OXczcHQ5aTZvYmtjc2gifQ.ummEQxsRIweCIdv9CRRzOw';
-		let map = new mapboxgl.Map({
-			container: 'map',
-			style: 'mapbox://styles/mapbox/streets-v11',
-			zoom: 5.5,
-			center: [138, 38]
-		});
+    <main id="container">
+        <div id="side-panel">
 
-		async function geojsonFetch() {
-			let response, peaks, table;
-			response = await fetch('assets/tallest_peaks.geojson');
-			peaks = await response.json();
+            <h2>Selected Japanese Mountains</h2>
 
-			// Tokyo Tower coordinates
-			const tokyoTower = [139.7454, 35.6586];
 
-			// Calculate distance (Haversine formula)
-			function getDistance(coord1, coord2) {
-				const toRad = x => x * Math.PI / 180;
-				const R = 6371; // km
-				const dLat = toRad(coord2[1] - coord1[1]);
-				const dLon = toRad(coord2[0] - coord1[0]);
-				const lat1 = toRad(coord1[1]);
-				const lat2 = toRad(coord2[1]);
-				const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-						  Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
-				const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-				return R * c;
-			}
+            <button id="sort-height">Sort Mountains by Height</button>
+            <button id="sort-name">Sort Mountains by Name</button>
 
-			// Add distance property to each peak
-			peaks.features.forEach(f => {
-				f.properties.distance = getDistance(tokyoTower, f.geometry.coordinates);
-			});
 
-			// Sort by distance
-			peaks.features.sort((a, b) => a.properties.distance - b.properties.distance);
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Height (m)</th>
+                    <th>Location</th>
+                </tr>
+            </table>
 
-			table = document.getElementsByTagName("table")[0];
-			let row, cell1, cell2, cell3, cell4;
-			for (let i = 0; i < peaks.features.length; i++) {
-				row = table.insertRow(-1);
-				cell1 = row.insertCell(0);
-				cell2 = row.insertCell(1);
-				cell3 = row.insertCell(2);
-				cell4 = row.insertCell(3);
-				cell1.innerHTML = peaks.features[i].properties.name;
-				cell2.innerHTML = peaks.features[i].properties.height;
-				cell3.innerHTML = peaks.features[i].properties.location;
-				cell4.innerHTML = peaks.features[i].properties.distance.toFixed(2);
-			}
+        </div>
+        <div id="map"></div>
 
-			map.on('load', function() {
-				map.addSource('tallest-peaks', { type: 'geojson', data: peaks });
-				map.addLayer({
-					'id': 'tallest-peaks-layer',
-					'type': 'circle',
-					'source': 'tallest-peaks',
-					'paint': {
-						'circle-radius': 8,
-						'circle-stroke-width': 2,
-						'circle-color': '#ff6600',
-						'circle-stroke-color': 'white'
-					}
-				});
-			});
-		}
-		geojsonFetch();
-		let btn = document.getElementsByTagName("button")[0];
-		btn.addEventListener('click', sortTable);
-		// Sort table by distance (km)
-		function sortTable(e) {
-			let table, rows, switching, i, x, y, shouldSwitch;
-			table = document.getElementsByTagName("table")[0];
-			switching = true;
-			while (switching) {
-				switching = false;
-				rows = table.rows;
-				for (i = 1; i < (rows.length - 1); i++) {
-					shouldSwitch = false;
-					x = parseFloat(rows[i].getElementsByTagName("td")[3].innerHTML);
-					y = parseFloat(rows[i + 1].getElementsByTagName("td")[3].innerHTML);
-					if (x > y) {
-						shouldSwitch = true;
-						break;
-					}
-				}
-				if (shouldSwitch) {
-					rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-					switching = true;
-				}
-			}
-		}
-	</script>
+    </main>
+    <script>
+        // Create the map object using MapLibre GL JS and custom satellite style
+        const map = new maplibregl.Map({
+            container: 'map', // container id
+            center: [138, 38], // starting position [lng, lat]
+            zoom: 5.5, // starting zoom
+            style: {
+                "version": 8,
+                "sources": {
+                    "satellite": {
+                        "type": "raster",
+                        "tiles": ["https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2020_3857/default/g/{z}/{y}/{x}.jpg"],
+                        "tileSize": 256
+                    }
+                },
+                "layers": [{
+                    "id": "satellite",
+                    "type": "raster",
+                    "source": "satellite"
+                }]
+            }
+        });
+
+
+        async function geojsonFetch() {
+            let response, japan, mountains, table;
+            response = await fetch('assets/japan.json');
+            japan = await response.json();
+            // Use a custom GeoJSON with one mountain from each province
+            mountains = {
+                "type": "FeatureCollection",
+                "features": [
+                    { "type": "Feature", "properties": { "name": "Mount Fuji", "height": 3776, "location": "Shizuoka/Yamanashi" }, "geometry": { "type": "Point", "coordinates": [138.7274, 35.3606] } },
+                    { "type": "Feature", "properties": { "name": "Mount Kita", "height": 3193, "location": "Yamanashi" }, "geometry": { "type": "Point", "coordinates": [138.2428, 35.6747] } },
+                    { "type": "Feature", "properties": { "name": "Mount Okuhotaka", "height": 3190, "location": "Gifu/Nagano" }, "geometry": { "type": "Point", "coordinates": [137.6461, 36.2906] } },
+                    { "type": "Feature", "properties": { "name": "Mount Aino", "height": 3189, "location": "Shizuoka/Yamanashi" }, "geometry": { "type": "Point", "coordinates": [138.2261, 35.6461] } },
+                    { "type": "Feature", "properties": { "name": "Mount Yari", "height": 3180, "location": "Gifu/Nagano" }, "geometry": { "type": "Point", "coordinates": [137.6467, 36.3411] } },
+                    { "type": "Feature", "properties": { "name": "Mount Hōō", "height": 2840, "location": "Yamanashi" }, "geometry": { "type": "Point", "coordinates": [138.2981, 35.7261] } },
+                    { "type": "Feature", "properties": { "name": "Mount Norikura", "height": 3026, "location": "Gifu/Nagano" }, "geometry": { "type": "Point", "coordinates": [137.5531, 36.1061] } }
+                ]
+            };
+
+            // Store mountains globally for sorting
+            window.mountainsData = mountains;
+
+            function populateTable(mountainsList) {
+                table = document.getElementsByTagName("table")[0];
+                // Remove all rows except the header
+                while (table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+                let row, cell1, cell2, cell3;
+                for (let i = 0; i < mountainsList.length; i++) {
+                    row = table.insertRow(-1);
+                    cell1 = row.insertCell(0);
+                    cell2 = row.insertCell(1);
+                    cell3 = row.insertCell(2);
+                    cell1.innerHTML = mountainsList[i].properties.name;
+                    cell2.innerHTML = mountainsList[i].properties.height;
+                    cell3.innerHTML = mountainsList[i].properties.location;
+                }
+            }
+
+            // Initial population
+            populateTable(mountains.features);
+
+
+            // Sorting function for mountains by height
+            document.getElementById('sort-height').addEventListener('click', function() {
+                // Sort mountains by height descending
+                let sorted = [...window.mountainsData.features].sort((a, b) => b.properties.height - a.properties.height);
+                populateTable(sorted);
+            });
+
+            // Sorting function for mountains by name (A-Z)
+            document.getElementById('sort-name').addEventListener('click', function() {
+                let sorted = [...window.mountainsData.features].sort((a, b) => {
+                    let nameA = a.properties.name.toUpperCase();
+                    let nameB = b.properties.name.toUpperCase();
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    return 0;
+                });
+                populateTable(sorted);
+            });
+
+
+            //load data to the map as new layers and table on the side.
+            map.on('load', function loadingData() {
+
+                map.addSource('japan', {
+                    type: 'geojson',
+                    data: japan
+                });
+
+                map.addLayer({
+                    'id': 'japan-layer',
+                    'type': 'fill',
+                    'source': 'japan',
+                    'paint': {
+                        'fill-color': '#0080ff', // blue color fill
+                        'fill-opacity': 0.5
+                    }
+                });
+
+                // Add labels for mountains (titles below the points, above circles)
+                map.addLayer({
+                    'id': 'mountain-labels',
+                    'type': 'symbol',
+                    'source': 'mountains-3000m',
+                    'layout': {
+                        'text-field': ['get', 'name'],
+                        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                        'text-size': 14,
+                        'text-offset': [0, -2], // label below point
+                        'text-anchor': 'bottom'
+                    },
+                    'paint': {
+                        'text-color': '#ffffff',
+                        'text-halo-color': '#ff6600',
+                        'text-halo-width': 2
+                    }
+                }, 'mountains-3000m-layer'); // place above mountain circles
+
+                map.addSource('mountains-3000m', {
+                    type: 'geojson',
+                    data: mountains
+                });
+
+
+                map.addLayer({
+                    'id': 'mountains-3000m-layer',
+                    'type': 'circle',
+                    'source': 'mountains-3000m',
+                    'paint': {
+                        'circle-radius': 8,
+                        'circle-stroke-width': 2,
+                        'circle-color': '#ff6600',
+                        'circle-stroke-color': 'white'
+                    }
+                });
+
+                // Add labels for mountains (titles below the points)
+                map.addLayer({
+                    'id': 'mountain-labels',
+                    'type': 'symbol',
+                    'source': 'mountains-3000m',
+                    'layout': {
+                        'text-field': ['get', 'name'],
+                        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                        'text-size': 14,
+                        'text-offset': [0, -2], // further negative offset to ensure label is below
+                        'text-anchor': 'bottom' // anchor at the bottom so label is below point
+                    },
+                    'paint': {
+                        'text-color': '#ffffff',
+                        'text-halo-color': '#ff6600',
+                        'text-halo-width': 2
+                    }
+                });
+
+            });
+
+        }
+
+        geojsonFetch();
+
+        // ...existing code...
+    </script>
+
 </body>
+
 </html>
